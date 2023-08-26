@@ -1,0 +1,63 @@
+﻿@page "/"
+
+<PageTitle>TURP Blocks Calculator</PageTitle>
+
+<div class="row">
+    <div class="col-sm-3"></div>
+    <div class="col-sm-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Calculator</h5>
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label" for="weight">Prostate weight</label>
+                        <input class="form-control" id="weight" @oninput="OnWeightChange"/>
+                    </div>
+                    <div class="mb-3">
+                        <div class="display-1 text-center">@(weight.ToString())</div>
+                    </div>
+                    <div class="mb-3">
+                        <p class="text-center mb-0"><strong>Blocks required</strong></p>
+                        <div class="display-1 text-center text-primary mt-0">@(blocks.ToString())</div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private int weight { get; set; }
+
+    private int blocks { get; set; }
+
+    private void OnWeightChange(ChangeEventArgs e) {
+        string? txtWeight = e.Value?.ToString();
+
+        if(txtWeight is null) {
+            weight = 0;
+            blocks = 0;
+            return;
+        }
+
+        bool conversionResult = int.TryParse(txtWeight, out int w);
+        if(!conversionResult) {
+            weight = 0;
+            blocks = 0;
+            return;
+        }
+
+        weight = w;
+        blocks = blocksFromWeight(w);
+    }
+
+    private int blocksFromWeight(int w) {
+        if (w < 1)
+            return 0;
+
+        if (w < 13)
+            return (int)Math.Ceiling((double)w / 2.0);
+
+        return 6 + (int)Math.Floor(((double)w - 12.0) / 5.0);
+    }
+}
